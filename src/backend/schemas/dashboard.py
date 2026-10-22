@@ -1,30 +1,48 @@
-from pydantic import BaseModel
-from backend.schemas import application
+"""Pydantic schemas for the admin dashboard summary.
+
+Every number here is calculated from the database. Nothing is hardcoded in the
+frontend, so the dashboard always reflects the real data.
+"""
+
+from __future__ import annotations
+
+from backend.models.job import JobStatus
+from backend.schemas.common import BaseSchema
+
+__all__ = [
+    "ApplicationStatusCounts",
+    "DashboardResponse",
+    "JobDashboardSummary",
+]
 
 
+class ApplicationStatusCounts(BaseSchema):
+    """How many applications exist in each status."""
 
-class ApplicationStatusCounts(BaseModel):
     pending: int
     accepted: int
     rejected: int
     total: int
 
 
+class JobDashboardSummary(BaseSchema):
+    """The application counts of a single job."""
 
-class JobDashboardSummary(BaseModel):
     job_id: int
     title: str
-    job_status: str
+    status: JobStatus
     application_counts: ApplicationStatusCounts
 
 
+class DashboardResponse(BaseSchema):
+    """The whole dashboard payload."""
 
-class DashboardResponse(BaseModel):
     total_jobs: int
     open_jobs: int
     closed_jobs: int
+    # Draft jobs are counted separately: they are not published yet, so they
+    # must not be mixed into the open or closed numbers.
+    draft_jobs: int
     total_applications: int
-    pending_applications: int
-    accepted_applications: int
-    rejected_applications: int
+    application_counts: ApplicationStatusCounts
     jobs: list[JobDashboardSummary]
