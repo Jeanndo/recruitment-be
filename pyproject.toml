@@ -4,11 +4,12 @@ version = "0.1.0"
 description = "Brightcore Techology e-Recruitement-APIs"
 readme = "README.md"
 authors = [
-    { name = "Jeanndo", email = "ukjeando@gmail.com" }
+    { name = "Jeanndo", email = "jeanndo.dev@gmail.com" }
 ]
 requires-python = ">=3.14"
 dependencies = [
     "fastapi[standard]>=0.159.1",
+    "sqlalchemy>=2.1.6",
 ]
 
 [project.scripts]
