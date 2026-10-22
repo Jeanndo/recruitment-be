@@ -2,6 +2,10 @@ from fastapi import FastAPI, HTTPException,status,Request
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 from starlette.exceptions import HTTPException as StarletteHTTPException
+from backend.schemas.job import JobCreate,JobResponse
+from backend.schemas.user import UserCreate,UserResponse
+from backend.schemas.application import ApplicationCreate, ApplicationResponse
+
 
 app = FastAPI()
 
