@@ -129,8 +129,8 @@ class Application(Base):
             "normalized_email",
             name="applications_job_id_normalized_email",
         ),
-        # Squupports the most common admin ery: "applications of job X with status Y".
-        # 
+        # Supports the most common admin query: "applications of job X with
+        # status Y".
         Index("ix_applications_job_id_status", "job_id", "status"),
         # Supports sorting a list by submission date.
         Index("ix_applications_created_at", "created_at"),

@@ -7,15 +7,15 @@ This module is pure infrastructure: it knows *how* to reach the database, never
 
 from __future__ import annotations
 
-import os
 from collections.abc import Generator
 
 from sqlalchemy import create_engine
 from sqlalchemy.orm import DeclarativeBase, Session, sessionmaker
 
-# Read the connection string from the environment. The SQLite fallback keeps
-# `pytest` and quick experiments working on a machine with no database server.
-DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///./jobs.db")
+from backend.core.config import settings
+
+# The connection string comes from `.env` (see `backend/core/config.py`).
+DATABASE_URL = settings.database_url
 
 # SQLite only allows a connection to be used from the thread that created it,
 # but FastAPI may serve a request from a different worker thread.

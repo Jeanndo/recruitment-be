@@ -13,7 +13,7 @@ from typing import Annotated
 from pydantic import Field, StringConstraints
 
 from backend.models.job import EmploymentType, JobStatus
-from backend.schemas.common import BaseSchema
+from backend.schemas.common import BaseSchema, PaginationParams
 
 __all__ = [
     "EmploymentType",
@@ -21,6 +21,7 @@ __all__ = [
     "JobBase",
     "JobCloseResponse",
     "JobCreate",
+    "JobFilterOptions",
     "JobListItem",
     "JobResponse",
     "JobUpdate",
@@ -88,6 +89,10 @@ class JobResponse(JobBase):
 
     id: int
     status: JobStatus
+    # Computed by the `Job` model: True while the job is published and its
+    # closing date has not passed. The frontend uses it to enable or disable
+    # the "Apply" button without re-implementing the rule.
+    is_accepting_applications: bool
     created_at: datetime
     updated_at: datetime
 
@@ -107,6 +112,7 @@ class JobListItem(BaseSchema):
     summary: str
     closing_date: date
     status: JobStatus
+    is_accepting_applications: bool
 
 
 class JobCloseResponse(BaseSchema):
@@ -115,3 +121,15 @@ class JobCloseResponse(BaseSchema):
     id: int
     status: JobStatus
     message: str
+
+
+class JobFilterOptions(PaginationParams):
+    """Query parameters of the public jobs listing.
+
+    There is no `status` filter on purpose: the public endpoint always shows
+    open jobs only, and that rule must not be left to the client.
+    """
+
+    search: str | None = Field(default=None, max_length=100)
+    location: str | None = Field(default=None, max_length=100)
+    employment_type: EmploymentType | None = None
