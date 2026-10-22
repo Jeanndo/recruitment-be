@@ -19,6 +19,7 @@ from backend.schemas.common import BaseSchema, PaginationParams
 __all__ = [
     "AdminApplicationDetail",
     "AdminApplicationItem",
+    "AdminJobFilterOptions",
     "AdminJobListItem",
     "AdminJobReference",
     "ApplicationFilterOptions",
@@ -80,4 +81,15 @@ class ApplicationFilterOptions(PaginationParams):
 
     status: ApplicationStatus | None = None
     # Text search over the applicant's name and email.
+    search: str | None = Field(default=None, max_length=100)
+
+
+class AdminJobFilterOptions(PaginationParams):
+    """Query parameters of the admin jobs table.
+
+    Unlike the public listing this accepts a status, because an administrator
+    needs to find drafts and closed jobs too.
+    """
+
+    status: JobStatus | None = None
     search: str | None = Field(default=None, max_length=100)

@@ -123,6 +123,15 @@ class Job(Base):
     def __repr__(self) -> str:
         return f"<Job id={self.id} title={self.title!r} status={self.status.value}>"
 
+    @property
+    def is_accepting_applications(self) -> bool:
+        """True only while the job is published and its closing date is today or later.
+
+        The closing date is compared against the *UTC* date so the rule does
+        not change depending on the server's local timezone.
+        """
+        return self.status is JobStatus.OPEN and self.closing_date >= datetime.now(UTC).date()
+
 
 # SQLAlchemy resolves relationship targets such as "Application" by name from
 # its class registry. Importing the module here guarantees that the class is
