@@ -18,8 +18,9 @@ from fastapi.responses import JSONResponse
 from starlette.exceptions import HTTPException as StarletteHTTPException
 from starlette.middleware.sessions import SessionMiddleware
 
-from backend.api.routes import admin_jobs, auth, jobs
+from backend.api.routes import admin_applications, admin_jobs, applications, auth, jobs
 from backend.core.config import settings
+from backend.services.application_exceptions import ApplicationError
 from backend.services.exceptions import JobServiceError
 
 app = FastAPI(
@@ -58,7 +59,9 @@ app.add_middleware(
 
 # --- Routers ----------------------------------------------------------------
 app.include_router(jobs.router)
+app.include_router(applications.router)
 app.include_router(admin_jobs.router)
+app.include_router(admin_applications.router)
 app.include_router(auth.router)
 
 
@@ -110,6 +113,20 @@ def job_service_error_handler(request: Request, exception: JobServiceError) -> J
     For example `JobNotFoundError` becomes a 404 and
     `InvalidStatusTransitionError` becomes a 409, without every route
     repeating the same try/except.
+    """
+    return JSONResponse(
+        status_code=exception.status_code,
+        content={"detail": exception.message},
+    )
+
+
+@app.exception_handler(ApplicationError)
+def application_error_handler(request: Request, exception: ApplicationError) -> JSONResponse:
+    """Do the same for application rules (duplicates, closed jobs, bad CVs).
+
+    The message is passed through unchanged. For a bad CV it is a list with a
+    `loc` of `["body", "cv"]`, mirroring FastAPI's own validation errors so the
+    frontend can put the message under the file field.
     """
     return JSONResponse(
         status_code=exception.status_code,

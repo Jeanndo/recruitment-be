@@ -142,6 +142,17 @@ class Application(Base):
             f"email={self.email!r} status={self.status.value}>"
         )
 
+    @property
+    def cv_available(self) -> bool:
+        """True when this application has a CV that can be downloaded.
+
+        `cv_storage_name` is required, so this is always True today. It stays
+        a property because the admin list schema uses it to decide whether to
+        enable the download link, and that decision belongs to the data, not
+        to the frontend.
+        """
+        return bool(self.cv_storage_name)
+
 
 # Imported at the end of the module so SQLAlchemy can resolve the "Job"
 # relationship target by name. See the same note in `backend/models/job.py`.

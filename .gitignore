@@ -12,3 +12,6 @@ wheels/
 # Environment variables (contain credentials - never commit)
 .env
 .env.local
+
+# Private uploaded files (applicant CVs - never commit)
+var/
