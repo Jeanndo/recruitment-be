@@ -205,10 +205,11 @@ def update_review_status(
     """
     application = get_application(db, application_id)
 
+    previous_status = application.status
     new_status = payload.status
 
-    if new_status is not application.status:
-        _validate_status_transition(application.status, new_status)
+    if new_status is not previous_status:
+        _validate_status_transition(previous_status, new_status)
 
     application.status = new_status
 
@@ -220,7 +221,12 @@ def update_review_status(
     db.commit()
     db.refresh(application)
 
-    _log_mock_notification(application)
+    if new_status is not previous_status:
+        logger.info(
+            "Application %s review status changed to %s.",
+            application.id,
+            application.status.value,
+        )
     return application
 
 
@@ -232,22 +238,3 @@ def _validate_status_transition(
         raise InvalidApplicationStatusTransitionError(
             f"An application cannot move from {current.value} to {new.value}."
         )
-
-
-def _log_mock_notification(application: Application) -> None:
-    """Pretend to email the candidate about the decision.
-
-    A real integration would call an email provider here. The assessment only
-    asks for a mocked notification, and it must never make the status change
-    fail - hence the broad guard around a logging call. Only the application id
-    and the new status are logged: no name, email address or cover note ever
-    reaches the logs.
-    """
-    try:
-        logger.info(
-            "Mock notification: application %s is now %s.",
-            application.id,
-            application.status.value,
-        )
-    except Exception:  # pragma: no cover - logging must never break the request
-        logger.debug("Mock notification could not be logged", exc_info=True)

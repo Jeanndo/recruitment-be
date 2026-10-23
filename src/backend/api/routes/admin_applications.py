@@ -28,7 +28,7 @@ from backend.schemas.application import (
     CVMetadataResponse,
 )
 from backend.schemas.common import PaginatedResponse
-from backend.services import application_service, cv_storage
+from backend.services import application_service, cv_storage, email_service
 
 router = APIRouter(
     prefix="/api/v1/admin",
@@ -113,13 +113,25 @@ def get_application(
         "Omitting `admin_note` keeps the existing note; `null` clears it."
     ),
 )
-def update_status(
+async def update_status(
     application_id: int,
     payload: ApplicationStatusUpdate,
     db: Session = Depends(get_db),
 ) -> ApplicationStatusResponse:
     """Save the new review status and optional internal note."""
+    previous_status = application_service.get_application(db, application_id).status
     application = application_service.update_review_status(db, application_id, payload)
+
+    # Only a real transition should reach the applicant. Saving just the
+    # internal note (same status) stays internal, and the note itself is never
+    # included in any email.
+    if application.status is not previous_status:
+        await email_service.send_application_status_email(
+            to_email=application.email,
+            full_name=application.full_name,
+            job_title=application.job.title,
+            status=application.status,
+        )
 
     return ApplicationStatusResponse(
         id=application.id,

@@ -50,6 +50,10 @@ class Settings(BaseSettings):
     admin_password: str
     admin_full_name: str = "BrightCore Admin"
 
+    # --- Email ------------------------------------------------------------
+    email_sender: str = ""
+    email_sender_pass: str = ""
+
     # --- Frontend ---------------------------------------------------------
     # Comma-separated list, for example "http://localhost:3000".
     cors_origins: str = "http://localhost:3000"
