@@ -4,7 +4,7 @@ The API behind the BrightCore careers site: a public job board, application
 submission with CV uploads, staff authentication, and a protected admin
 workspace for managing jobs and reviewing applicants.
 
-The matching frontend lives in the `frontend/` repository and runs at
+The matching frontend lives in the `recruitment-web-fe/` repository and runs at
 `http://localhost:3000` during development.
 
 ## What it does
@@ -89,7 +89,7 @@ psql -U postgres -c "CREATE DATABASE brightcore;"
 ## Quick start
 
 ```bash
-cd backend
+cd recruitment-be
 
 # 1. Local configuration
 cp .env.example .env
