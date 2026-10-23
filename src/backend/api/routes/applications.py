@@ -15,7 +15,7 @@ from sqlalchemy.orm import Session
 
 from backend.database import get_db
 from backend.schemas.application import ApplicationCreate, ApplicationCreatedResponse
-from backend.services import application_service, cv_storage
+from backend.services import application_service, cv_storage, email_service
 
 router = APIRouter(prefix="/api/v1/jobs", tags=["Applications"])
 
@@ -51,6 +51,14 @@ async def submit_application(
         # The row was not saved, so the file must not stay behind.
         cv_storage.delete_cv(stored_cv.storage_name)
         raise
+
+    # Best-effort: the application is already saved and must not fail because
+    # the mail provider is unreachable.
+    await email_service.send_application_confirmation_email(
+        to_email=application.email,
+        full_name=application.full_name,
+        job_title=job.title,
+    )
 
     return ApplicationCreatedResponse(
         id=application.id,

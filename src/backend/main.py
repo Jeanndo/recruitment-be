@@ -18,7 +18,14 @@ from fastapi.responses import JSONResponse
 from starlette.exceptions import HTTPException as StarletteHTTPException
 from starlette.middleware.sessions import SessionMiddleware
 
-from backend.api.routes import admin_applications, admin_jobs, applications, auth, jobs
+from backend.api.routes import (
+    admin_applications,
+    admin_dashboard,
+    admin_jobs,
+    applications,
+    auth,
+    jobs,
+)
 from backend.core.config import settings
 from backend.services.application_exceptions import ApplicationError
 from backend.services.exceptions import JobServiceError
@@ -60,6 +67,7 @@ app.add_middleware(
 # --- Routers ----------------------------------------------------------------
 app.include_router(jobs.router)
 app.include_router(applications.router)
+app.include_router(admin_dashboard.router)
 app.include_router(admin_jobs.router)
 app.include_router(admin_applications.router)
 app.include_router(auth.router)

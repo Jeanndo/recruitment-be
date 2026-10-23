@@ -6,6 +6,8 @@ frontend, so the dashboard always reflects the real data.
 
 from __future__ import annotations
 
+from datetime import date
+
 from backend.models.job import JobStatus
 from backend.schemas.common import BaseSchema
 
@@ -30,6 +32,8 @@ class JobDashboardSummary(BaseSchema):
 
     job_id: int
     title: str
+    location: str
+    closing_date: date
     status: JobStatus
     application_counts: ApplicationStatusCounts
 
